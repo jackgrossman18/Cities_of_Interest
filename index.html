@@ -19,13 +19,10 @@
 
 <script type="text/javascript">
   // add map with tiles and extent restrictions
-  var map = L.map('map',{
-    zoomControl: false
-
-  })
+  var map = L.map('map')
   map.setView([39.8282, -98.5795],4);
 
-  var tiles = "https://api.mapbox.com/styles/v1/mapbox/dark-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWF4Z3Jvc3NtYW4iLCJhIjoiY2loZTQ5bHpxMGlyaXRwbHpsN3FscjA3bSJ9.ry1OJsQ5SCbhrH7fYd7adg"
+  var tiles = "https://api.mapbox.com/styles/v1/mapbox/outdoors-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWF4Z3Jvc3NtYW4iLCJhIjoiY2loZTQ5bHpxMGlyaXRwbHpsN3FscjA3bSJ9.ry1OJsQ5SCbhrH7fYd7adg"
 
   var attribution = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
                     '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>,' +
@@ -47,9 +44,23 @@
 //load geoJson
   $.ajax({
     dataType: "json",
-    url: "Cities_within_KML.geojson",
+    url: "https://raw.githubusercontent.com/koshermoses/Cities_of_Interest/master/Cities_within_KML.geojson",
     success: function(data) {
-      L.geoJson(data).addTo(map);
+      L.geoJson(data, {
+        onEachFeature: function onEachFeature(feature,layer){
+          if (feature.properties){
+              var satelliteimage = "<p>Satellite Image: " + feature.properties.Satellite_Image + "</p"
+              var project = "<p>Project: " + feature.properties.Project + "</p>"
+              var sigma = "<p>Sigma :" + feature.properties.Sigma + "</p>"
+              var city = "<p>City :" + feature.properties.City + "</p>"
+              var state = "<p>State :" + feature.properties.State + "</p>"
+              var utility = "<p>Water Utility Name : </p>" + "<p><a href='"+ feature.properties.Website + ">" +
+              feature.properties.Water_Utility_Name +"</p>"
+
+            layer.bindPopup(satelliteimage + project + sigma + city + state + utility)
+          }
+        }
+      }).addTo(map);
     }});
 </script>
 
